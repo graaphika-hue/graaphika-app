@@ -64,8 +64,16 @@ function renderProducts(){
   if(!productPhotos.length){const empty=document.createElement('div');empty.className='service';empty.textContent='Product photos are not added yet. Open “Add / Manage Product Photos” below.';productGallery.appendChild(empty);return;}
   productPhotos.forEach((item,index)=>{
     const card=document.createElement('article');card.className='product-card';
-    const img=document.createElement('img');img.src=item.image;img.alt=item.title||item.category;img.loading='lazy';img.style.cursor='zoom-in';img.title='Click to view full photo';img.addEventListener('click',()=>{const w=window.open('','_blank');if(w){w.document.write('<title>GRAAPHIKA Photo</title><body style="margin:0;background:#080d0a;display:grid;place-items:center;min-height:100vh"><img style="max-width:98vw;max-height:98vh;object-fit:contain" src="'+item.image+'"><script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.warn)); }</script>
-</body>');w.document.close();}});
+    const img=document.createElement('img');img.src=item.image;img.alt=item.title||item.category;img.loading='lazy';img.style.cursor='zoom-in';img.title='Click to view full photo';img.addEventListener('click',()=>{
+      const w=window.open('','_blank');
+      if(w){
+        const safeImage=document.createElement('img');safeImage.src=item.image;
+        safeImage.style.cssText='max-width:98vw;max-height:98vh;object-fit:contain';
+        w.document.title='GRAAPHIKA Photo';
+        w.document.body.style.cssText='margin:0;background:#080d0a;display:grid;place-items:center;min-height:100vh';
+        w.document.body.appendChild(safeImage);
+      }
+    });
     const info=document.createElement('div');info.className='product-info';
     const title=document.createElement('b');title.textContent=item.title||item.category;
     const category=document.createElement('small');category.textContent=item.category+(item.sample?' · Reference image (not our work)':' · Portfolio photo');
@@ -101,5 +109,6 @@ document.getElementById('saveProductBtn').addEventListener('click',()=>{
  }catch(err){productStatus.textContent='Could not save app: '+err.message;}
 });
 renderProducts();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) { window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(console.warn)); }
 </script>
 </body></html>
